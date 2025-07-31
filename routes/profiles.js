@@ -2,9 +2,11 @@ const express = require('express')
 const router = express.Router()
 const Controller = require('../controllers/controller')
 
-router.post('/', Controller.createProfile)
+// router.get('/create', Controller.getCreateProfile)
+// router.post('/create', Controller.postCreateProfile)
+router.get('/edit/:id', Controller.getEditProfile)
+router.post('/edit/:id', Controller.postEditProfile)
+router.post('/delete/:id', Controller.deleteProfile)
 router.get('/:id', Controller.getProfile)
-router.post('/:id/edit', Controller.editProfile)
-router.post('/:id/delete', Controller.deleteProfile)
 
 module.exports = router

@@ -5,12 +5,17 @@ const {
 module.exports = (sequelize, DataTypes) => {
   class Post extends Model {
     static associate(models) {
-      Post.belongsToMany(models.Interaction, {
-        through: models.PostInteraction,
-        foreignKey: 'postId',
-        otherKey: 'interactionId'
-      });
-    }
+  Post.belongsTo(models.User, {
+    foreignKey: 'userId',
+    as: 'User'
+  });
+  Post.belongsToMany(models.Interaction, {
+    through: models.PostInteraction,
+    foreignKey: 'postId',
+    otherKey: 'interactionId'
+  });
+}
+
   }
   Post.init({
     userId: DataTypes.INTEGER,

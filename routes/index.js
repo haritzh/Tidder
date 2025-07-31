@@ -8,6 +8,7 @@ const postsRouter = require('./posts')
 const interactionsRouter = require('./interactions')
 
 router.get('/', Controller.home)
+router.get('/home', Controller.getHome)
 router.use('/users', userRouter)
 router.use('/profiles', profilesRouter)
 router.use('/posts', postsRouter)

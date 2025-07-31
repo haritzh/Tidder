@@ -16,18 +16,24 @@ class Controller {
 
             // Ambil semua post dari database (misal kamu punya model Post)
             const posts = await Post.findAll({
-                include: [
-                    {
-                        model: User,
-                        attributes: ['username']
-                    }
-                ],
+                include: [{
+                    model: User,
+                    as: 'User',
+                    attributes: ['username']
+                }],
                 order: [['createdAt', 'DESC']]
             });
 
+
+            // res.render('users/home', {
+            //     posts,
+            //     user: 'Guest' //! sementara
+            //     // user: req.session.username // bisa dipakai untuk ucapan 'Hi, {username}'
+            // });
             res.render('users/home', {
-                posts
-                // user: req.session.username // bisa dipakai untuk ucapan 'Hi, {username}'
+                posts,
+                user: "Guest",
+                userId: 1
             });
         } catch (error) {
             console.log(error);
@@ -105,65 +111,132 @@ class Controller {
         }
     }
 
-  // ========== PROFILES ==========
-  static createProfile(req, res) {
-    if (req.method === 'GET') {
-      res.render('profiles/create');
-    } else {
-      // TODO: Create logic
-      res.redirect('/profiles');
+    // ========== PROFILES ==========
+    static async getProfile(req, res) {
+        try {
+            const userId = req.params.id;
+
+            const userData = await User.findByPk(userId, {
+            include: Profile
+            });
+
+            if (!userData || !userData.Profile) {
+            return res.status(404).send('User or Profile not found');
+            }
+
+            res.render('profiles/show', {
+            user: userData,
+            userId: userData.id
+            });
+        } catch (error) {
+            console.log(error);
+            res.send(error);
+        }
     }
-  }
 
-  static getProfile(req, res) {
-    const id = req.params.id;
-    // TODO: Fetch profile
-    res.render('profiles/show', { profileId: id });
-  }
+    static async getEditProfile(req, res) {
+        try {
+            const profileId = req.params.id;
+            const profile = await Profile.findByPk(profileId, { include: User });
 
-  static editProfile(req, res) {
-    const id = req.params.id;
-    if (req.method === 'GET') {
-      // TODO: Fetch profile
-      res.render('profiles/edit', { profileId: id });
-    } else {
-      // TODO: Update logic
-      res.redirect(`/profiles/${id}`);
+            res.render('profiles/edit', {
+            profileId,
+            profile,
+                bio: profile.bio,
+                photoProfile: profile.photoProfile,
+                user: profile.User.username,
+                userId: profile.User.id
+            });
+        } catch (error) {
+                console.log(error);
+                res.send(error);
+        }
     }
-  }
 
-  static deleteProfile(req, res) {
-    const id = req.params.id;
-    // TODO: Delete profile logic
-    res.redirect('/profiles');
-  }
+
+    static async postEditProfile(req, res) {
+        try {
+            const profileId = req.params.id;
+            const { bio, photoProfile } = req.body;
+
+            // Update data ke database
+            await Profile.update(
+            { bio, photoProfile },
+            { where: { id: profileId } }
+            );
+
+            const profile = await Profile.findByPk(profileId);
+            res.redirect(`/profiles/${profile.UserId}`);
+        } catch (error) {
+            console.log(error);
+            res.send(error);
+        }
+    }
+
+    static async deleteProfile(req, res) {
+        try {
+            const id = req.params.id;
+            await Profile.destroy({ where: { id } });
+            res.redirect(`/profiles/${id}`)
+        } catch (error) {
+            console.log(error);
+            res.send(error);
+        }
+    }
 
   // ========== POSTS ==========
-  static createPost(req, res) {
-    if (req.method === 'GET') {
-      res.render('posts/create');
-    } else {
-      // TODO: Create post logic
-      res.redirect('/posts');
+    static async getCreatePost(req, res) {
+        try {
+            res.render('posts/create')
+        } catch (err) {
+            res.send(err)
+        }
     }
+
+  static async postCreatePost(req, res) {
+        try {
+            const { title, content } = req.body
+            await Post.create({ title, content, UserId: req.session.userId })
+            res.redirect('/home')
+        } catch (error) {
+            res.send(error)
+        }
   }
 
-  static editPost(req, res) {
-    const id = req.params.id;
-    if (req.method === 'GET') {
-      // TODO: Fetch post
-      res.render('posts/edit', { postId: id });
-    } else {
-      // TODO: Edit post logic
-      res.redirect('/posts');
-    }
-  }
+     static async getEditPost(req, res) {
+        try {
+        const id = req.params.id
+        const post = await Post.findByPk(id)
 
-  static deletePost(req, res) {
-    const id = req.params.id;
-    // TODO: Delete post logic
-    res.redirect('/posts');
-  }
+        res.render('posts/edit', { post })
+        } catch (error) {
+            res.send(error)
+        }
+    }
+
+    static async postEditPost(req, res) {
+        try {
+            const id = req.params.id
+            const { title, content } = req.body
+            await Post.update(
+                { title, content },
+                { where: { id } }
+            )
+            res.redirect('/home')
+        } catch (error) {
+            res.send(error)
+        }
+    }
+
+    static async deletePost(req, res) {
+        try {
+            const id = req.params.id
+            await Post.destroy({ where: { id } })
+            res.redirect('/home')
+        } catch (error) {
+            res.send(error)
+        }
+    }
 
   // ========== INTERACTIONS ==========
   static upvotePost(req, res) {
