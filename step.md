@@ -24,7 +24,7 @@ https://sequelize.org/docs/v6/other-topics/migrations/
 
 >> npx sequelize model:create --name Post --attributes userId:integer,title:string,content:text,createdAt:date  <<
 
->> npx sequelize model:create --name Interaction --attributes commment:string,upVotes:integer,downVotes:integer <<
+>> npx sequelize model:create --name Interaction --attributes comment:string,upVotes:integer,downVotes:integer <<
 
 >> npx sequelize model:create --name PostInteraction --attributes interactionId:integer,postId:integer <<
 

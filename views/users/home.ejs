@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tidder - Home</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body class="bg-light">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4">
+        <a class="navbar-brand" href="/home">Tidder</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/profile">Hi, <%= user %></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-danger" href="/logout">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="container mt-4">
+        <h2 class="mb-4">Latest Posts</h2>
+        <!-- <h2 class="mb-4">🔥 Latest Posts</h2> -->
+
+        <% if (posts.length === 0) { %>
+            <p>No posts yet. Be the first to post!</p>
+        <% } else { %>
+            <% posts.forEach(post => { %>
+                <div class="card mb-3 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title"><%= post.title %></h5>
+                        <p class="card-text"><%= post.content %></p>
+                        <small class="text-muted">Posted by <strong><%= post.User.username %></strong> on <%= post.createdAt.toDateString() %></small>
+                    </div>
+                </div>
+            <% }); %>
+        <% } %>
+    </main>
+</body>
+</html>
