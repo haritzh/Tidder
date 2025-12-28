@@ -1,0 +1,12 @@
+[
+  {
+    "userId": 1,
+    "photoProfile": "https://example.com/photos/john.jpg",
+    "bio": "Loves coding"
+  },
+  {
+    "userId": 2,
+    "photoProfile": "https://example.com/photos/jane.jpg",
+    "bio": "Tech enthusiast"
+  }
+]
